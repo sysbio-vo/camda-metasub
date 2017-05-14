@@ -28,10 +28,20 @@ kneaddata --input SRR12345_1.fastq --input SRR12345_2.fastqc -db db/Homo_sapiens
 Clark
 
 ./set_targets.sh clark/db/ bacteria viruses
-./classify_metagenome.sh -P clark/samples.R.txt clark/samples.L.txt -R clark/resultst.txt -n 20
+./classify_metagenome.sh -P clark/samples.R.txt clark/samples.L.txt -R clark/results.txt -n 20
 ./estimate_abundance.sh -F SRR12345_clark.csv -D clark/db --highconfidence -a 0.01 --krona > SRR12345_clark_OTU.csv
 
 Krona
 
-ktImportTaxonomy SRR12345_clark.csv.krn
+ktImportTaxonomy *.krn -m 3
 
+List files with full path
+
+for dirs:
+ls -d -1 $PWD/**
+
+for files:
+ls -d -1 $PWD/*.*
+
+for everything:
+ls -d -1 $PWD/**/*
