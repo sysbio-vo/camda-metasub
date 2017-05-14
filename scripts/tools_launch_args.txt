@@ -1,0 +1,37 @@
+Fastqc
+
+fastqc inputdir/SRR* -t 20 -o .
+
+
+AfterQC
+
+after.py -d inputdir/ -g good -b bad --read1_flag="_1" --read2_flag="_2" --debubble -s 70
+after.py -d inputdir/ -g good -b bad --read1_flag="_1" --read2_flag="_2" --debubble
+
+TrimGalore
+
+trim_galore --paired --nextera -o outputdir/ SRR12345_1.fastq SRR12345_2.fastqc
+trim_galore --paired --nextera --length 70 --fastqc --fastqc_args "-t 20 -o outputdir/fastqc/" -o outputdir/trimgalore/ SRR12345_1.fastq SRR12345_2.fastqc
+
+Prinseq
+
+perl prinseq-lite.pl -fastq SRR12345_1.fastq -fastq2 SRR12345_2.fastqc -log output.log -min_len 70
+
+MultiQC
+
+multiqc inputdir/ -o outputdir/
+
+KneadData
+
+kneaddata --input SRR12345_1.fastq --input SRR12345_2.fastqc -db db/Homo_sapiens_Bowtie2_v0.1/Homo_sapiens --output outputdir/ --bypass-trim -t 20
+
+Clark
+
+./set_targets.sh clark/db/ bacteria viruses
+./classify_metagenome.sh -P clark/samples.R.txt clark/samples.L.txt -R clark/resultst.txt -n 20
+./estimate_abundance.sh -F SRR12345_clark.csv -D clark/db --highconfidence -a 0.01 --krona > SRR12345_clark_OTU.csv
+
+Krona
+
+ktImportTaxonomy SRR12345_clark.csv.krn
+
