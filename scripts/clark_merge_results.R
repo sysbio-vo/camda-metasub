@@ -46,4 +46,15 @@ colnames(taxa) <- colnames(read.delim(file.path(dataDirectory, "CHK_otus.taxonom
 
 taxa$strain <- NA
 taxa <- apply(taxa, 2, function(x) gsub("^$|^ $", NA, x))
+taxa <- as.data.frame(taxa)
 
+# Creating a MRexperiment object
+meta <- meta.data
+row.names(meta) <- meta.data$ID
+meta <- meta[, -1]
+phenotypeData = AnnotatedDataFrame(meta)
+OTUdata = AnnotatedDataFrame(taxa)
+
+count <- as.data.frame(sapply(count, as.numeric))
+
+obj = newMRexperiment(count, phenoData=phenotypeData, featureData=OTUdata)
