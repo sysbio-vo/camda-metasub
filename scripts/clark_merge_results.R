@@ -1,25 +1,34 @@
 library(plyr)
 
-meta.data <- read.table("../otu_metadata/Boston_metadata.tsv", header = TRUE, stringsAsFactors = FALSE,
-                        sep = "\t")
+city = "boston"
+meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
+                        stringsAsFactors = FALSE, sep = "\t")
 
-filenames <- paste(meta.data$ID, "_clark_OTU.csv", sep="")
+filenames <- paste(meta.data$ID, "_", city, "_clark_OTU.csv", sep="")
 
 tables <- c()
 merged <- c()
 for (f in filenames) {
-  t <- read.table(paste("../boston_clark/", f , sep=""), fill = TRUE, 
+  t <- read.table(paste("../otu/", city, "/", f , sep=""), fill = TRUE, 
              sep = ",", header = TRUE, stringsAsFactors = FALSE)
-  colnames(t)[5] <- "Proportion_All"
-  colnames(t)[6] <- "Proportion_Classified"
-  t$Proportion_All[nrow(t)] <- t$Count[nrow(t)]
+  colnames(t)[5] <- "All"
+  colnames(t)[6] <- "Classified"
+  t$All[nrow(t)] <- t$Count[nrow(t)]
   t$Count[nrow(t)] <- t$Lineage[nrow(t)]
   t$Lineage[nrow(t)] <- "UNKNOWN"
-  
-  tables <- c(tables, list(t))
+  #merged <- merge(merged, t[,1:3], all=TRUE, by.all="TaxID")
   merged <- merge(merged, t[,1:3], all=TRUE)
+  t <- t[, c(-1, -3)]
+  tables <- c(tables, list(t))
+}
+
+final <- merged
+for (i in 1:length(tables)) {
+  final <- merge(final, tables[[i]], all=TRUE, by="TaxID")
+  colnames(final)[(i*3+1):(i*3+3)] = c(paste(c("Count", "All", "Classified"), ".", meta.data$ID[i], sep=""))
 }
 
 
 
-merged <- merge(tables[[1]][,1:3], tables[[2]][,1:3], all=TRUE)
+
+
