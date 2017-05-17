@@ -45,3 +45,16 @@ ls -d -1 $PWD/*.*
 
 for everything:
 ls -d -1 $PWD/**/*
+
+Cat particular line number
+
+cat /yourfile | sed '3!d'
+
+Change particular line number
+
+sed -i 'Ns/.*/replacement-line/' file.txt
+sed 'Ns/.*/replacement-line/' file.txt > new_file.txt
+
+Filter unpaired reads
+
+https://github.com/enormandeau/Scripts/blob/master/fastqCombinePairedEnd.py
