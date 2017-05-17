@@ -1,7 +1,7 @@
 library(plyr)
 library(stringr)
 
-city = "sacramento"
+city = "boston"
 meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
                         stringsAsFactors = FALSE, sep = "\t")
 
