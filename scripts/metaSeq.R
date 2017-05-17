@@ -1,14 +1,38 @@
-count <- final[,grepl("Count", names(final))]
+library(metagenomeSeq)
+library(plyr)
+library(stringr)
+
+city = "boston"
+meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
+                        stringsAsFactors = FALSE, sep = "\t")
+
+otu.data <- read.table(paste("../otu/", city, "_merged_otu.tsv", sep=""), header = TRUE,
+                       stringsAsFactors = FALSE, sep = "\t")
+
+rownames(meta.data) <- meta.data$ID
+
+count <- otu.data[,grepl("Count", names(otu.data))]
 colnames(count) <- meta.data$ID
 count[is.na(count)] <- 0
-rownames(count) <- final$TaxID
+rownames(count) <- otu.data$TaxID
 
-taxa <- str_split_fixed(final$Lineage, ";", 6)
+
+sums <- colSums(t(count))
+most.abundant <- otu.data[, 1:2]
+most.abundant$Count <- sums
+most.abundant <- most.abundant[order(most.abundant[,3], decreasing=TRUE), ]
+#most.abundant$Count <- round(most.abundant$Count/nrow(meta.data), 4)
+most.abundant$Count <- round(most.abundant$Count/sum(most.abundant$Count)*100, 4)
+
+write.table(most.abundant, paste("../otu/", city, "_sum_otu.tsv", sep=""), sep="\t",
+            row.names = FALSE)
+
+taxa <- str_split_fixed(otu.data$Lineage, ";", 6)
 taxa <- as.data.frame(taxa)
-taxa <- cbind(final$Lineage, taxa)
-taxa <- cbind(final$TaxID, taxa)
-taxa <- cbind(taxa, final$Name)
-taxa <- cbind(taxa, final$Name)
+taxa <- cbind(otu.data$Lineage, taxa)
+taxa <- cbind(otu.data$TaxID, taxa)
+taxa <- cbind(taxa, otu.data$Name)
+taxa <- cbind(taxa, otu.data$Name)
 colnames(taxa) <- colnames(read.delim(file.path(system.file("extdata", package = "metagenomeSeq"), "CHK_otus.taxonomy.csv"),
                                       stringsAsFactors = FALSE))
 

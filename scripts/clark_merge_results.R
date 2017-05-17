@@ -1,5 +1,4 @@
 library(plyr)
-library(metagenomeSeq)
 library(stringr)
 
 city = "sacramento"

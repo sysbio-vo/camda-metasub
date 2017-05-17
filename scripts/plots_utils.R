@@ -5,8 +5,26 @@ library(grid)
 library(reshape2)
 library(RColorBrewer)
 
+getAspectRatio <- function(p){
+  gb <- ggplot_build(p)
+  g <- ggplot_gtable(gb)
+  
+  nullw <- sapply(g$widths, attr, "unit")
+  nullh <- sapply(g$heights, attr, "unit")
+  
+  # ar of plot
+  if(any(nullw == "null"))
+    ar <- unlist(g$widths[nullw == "null"]) / unlist(g$heights[nullh == "null"])
+  
+  # ar of plot + legend
+  g$fullwidth <- convertWidth(sum(g$widths), "in", valueOnly=TRUE)
+  g$fullheight <- convertHeight(sum(g$heights), "in", valueOnly=TRUE)
+  ar <- g$fullwidth / g$fullheight
+  
+  return(ar)
+}
+
 pcaPlots <- function(pca.data, pheno.data, meta.vars, title, ncol) {
-  pheno.data[] <- lapply(pheno.data, as.character)
   plots <- c()
   ar <- -100
   for (i in meta.vars) {
