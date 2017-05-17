@@ -2,7 +2,7 @@ library(metagenomeSeq)
 library(plyr)
 library(stringr)
 
-city = "boston"
+city = "ny"
 meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
                         stringsAsFactors = FALSE, sep = "\t")
 
@@ -29,7 +29,7 @@ most.abundant <- most.abundant[order(most.abundant[,3], decreasing=TRUE), ]
 #most.abundant$Count <- round(most.abundant$Count/nrow(meta.data), 4)
 most.abundant$Count <- round(most.abundant$Count/sum(most.abundant$Count)*100, 4)
 
-write.table(most.abundant, paste("../otu/", city, "_sum_otu.tsv", sep=""), sep="\t",
+write.table(most.abundant, paste("../otu/", city, "_sum_otu.tsv", sep=""), sep="\t", quote = FALSE,
             row.names = FALSE)
 
 lev = levels(factor(meta.data$surface_material))
