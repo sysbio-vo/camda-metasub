@@ -2,7 +2,7 @@ library(metagenomeSeq)
 library(plyr)
 library(stringr)
 
-city = "ny"
+city = "boston"
 meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
                         stringsAsFactors = FALSE, sep = "\t")
 
@@ -100,10 +100,9 @@ tmp = lapply(levels(cl), function(lv) lm(res[, "ident"] ~ res[,"libSize"] - 1, s
 for (i in 1:length(levels(cl))) {
   abline(tmp[[i]], col = i)
 }
-legend("topleft", c(levels(cl), "NA"), text.col = c(1:length(levels(cl))+1),
+legend("topleft", levels(cl), text.col = 1:length(levels(cl)),
        box.col = NA)
 dev.off()
-
 
 ### Differential abundances
 data <- obj
@@ -130,5 +129,5 @@ fit2 = eBayes(fit2)
 t <- topTable(fit2, sort.by="logFC")
 t$species <- taxa[rownames(t),]$species
 
-write.table(t, paste("../otu/", city, "_diffabund_pvc_polyester.tsv", sep=""), sep="\t",
+write.table(t, paste("../otu/", city, "_diffabund_pvc_polyester.tsv", sep=""), sep="\t", quote = FALSE,
             row.names = FALSE)

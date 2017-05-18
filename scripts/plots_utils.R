@@ -28,8 +28,9 @@ pcaPlots <- function(pca.data, pheno.data, meta.vars, title, ncol) {
   plots <- c()
   ar <- -100
   for (i in meta.vars) {
-    pl <- autoplot(pca.data, data = pheno.data, colour=i) +
-      coord_fixed()
+    pl <- autoplot(pca.data, data = pheno.data, colour=i)
+      #coord_fixed()
+      #geom_text(aes(label=ID), size=2)
     newar <- getAspectRatio(pl)
     if (ar<newar) {
       ar <- newar

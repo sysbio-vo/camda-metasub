@@ -16,14 +16,15 @@ count[is.na(count)] <- 0
 rownames(count) <- otu.data$TaxID
 
 if (city=="boston") {
-  features = c("surface_material", "hs_dna", "GC", "surface_type",
-               "avg_seq_length", "unknown_species", "dups", "station",
-               "collection_date")
+#  features = c("surface_material", "hs_dna", "GC", "surface_type",
+#               "avg_seq_length", "unknown_species", "dups", "station",
+#               "collection_date")
+  features = c("surface_material", "surface_type")
   pca = prcomp(t(log(count+0.00001)))
-  nc = 3; nr = 3
+  nc = 2; nr = 1
 }
 if (city=="ny") {
-  features = c("surface_material", "load_date", "GC", "surface_type",
+  features = c("surface_material", "borough", "GC", "surface_type",
                "avg_seq_length", "unknown_species", "Mseqs", "collection_date",
                "sampling_place")
   pca = prcomp(t(log(count+0.00002)))
@@ -41,5 +42,5 @@ pl <- pcaPlots(pca, meta.data,
                features,
                ncol = nc)
 
-save_plot(paste("../plots/PCA/", city, "_PCA.pdf", sep=""), ncol=nc, nrow = nr, 
-          base_height=3, base_aspect_ratio = 1.5, pl[[1]])
+save_plot(paste("../plots/PCA/", city, "_PCA_short.pdf", sep=""), ncol=nc, nrow = nr, 
+          base_height=3, base_width= 5, pl[[1]])
