@@ -1,7 +1,7 @@
 library(plyr)
 source("plots_utils.R")
 
-city = "boston"
+city = "ny"
 meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
                         stringsAsFactors = FALSE, sep = "\t")
 
@@ -25,10 +25,10 @@ if (city=="boston") {
 }
 if (city=="ny") {
   features = c("surface_material", "borough", "GC", "surface_type",
-               "avg_seq_length", "unknown_species", "Mseqs", "collection_date",
-               "sampling_place")
+               "avg_seq_length", "unknown_species", "Mseqs", "avg_dew_point",
+               "sampling_place", "avg_air_temp_F", "ground_level", "avg_abs_humidity")
   pca = prcomp(t(log(count+0.00002)))
-  nc = 3; nr = 3
+  nc = 3; nr = 4
 }
 if (city=="sacramento") {
   features = c("surface_material", "hs_dna", "GC", "surface_type",
@@ -42,5 +42,5 @@ pl <- pcaPlots(pca, meta.data,
                features,
                ncol = nc)
 
-save_plot(paste("../plots/PCA/", city, "_PCA_short.pdf", sep=""), ncol=nc, nrow = nr, 
-          base_height=3, base_width= 5, pl[[1]])
+save_plot(paste("../plots/PCA/", city, "_PCA.pdf", sep=""), ncol=nc, nrow = nr, 
+          base_height=2.8, base_width= 6, pl[[1]])
