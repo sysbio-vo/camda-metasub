@@ -2,7 +2,7 @@ library(metagenomeSeq)
 library(plyr)
 library(stringr)
 
-city = "boston"
+city = "sacramento"
 meta.data <- read.table(paste("../metadata/", city, "_metadata.tsv", sep=""), header = TRUE,
                         stringsAsFactors = FALSE, sep = "\t")
 
@@ -33,7 +33,7 @@ write.table(most.abundant, paste("../otu/", city, "_sum_otu.tsv", sep=""), sep="
             row.names = FALSE)
 
 lev = levels(factor(meta.data$surface_material))
-dna <- data.frame(surface_material=c(1:length(l)), mean=c(1:length(l)), sd=c(1:length(l)))
+dna <- data.frame(surface_material=c(1:length(lev)), mean=c(1:length(lev)), sd=c(1:length(lev)))
 for (i in 1:length(lev)) {
   dna[i,1] <- lev[i]
   dna[i,2] <- mean(meta.data[which(meta.data$surface_material==lev[i]),]$hs_dna)
@@ -74,7 +74,7 @@ obj = cumNorm(obj, p = p)
 # Visualization
 
 ## Heatmap
-trials = pData(obj)$surface_material
+trials = pData(obj)$station
 heatmapColColors = brewer.pal(12, "Set3")[as.integer(factor(trials))]
 heatmapCols = colorRampPalette(brewer.pal(9, "RdBu"))(50)
 
@@ -108,11 +108,13 @@ dev.off()
 data <- obj
 rareFeatures = which(rowSums(MRcounts(data) > 0) < 10)
 data = data[-rareFeatures, ]
+op <- par(oma=c(5,7,1,1))
+par(mar = rep(1, 4))
 p = cumNormStat(data, pFlag = TRUE, main = "Trimmed data")
 data = cumNorm(data, p = p)
 
-pData(data)$surface_material[24] <- "unknown"
-material = pData(data)$surface_material
+#pData(data)$surface_material[24] <- "unknown"
+material = pData(data)$station
 mod = model.matrix(~as.factor(material))
 colnames(mod) = levels(factor(material))
 # fitting the ZIG model
@@ -123,11 +125,12 @@ res = fitZig(obj = data, mod = mod, control = settings)
 # limma 'MLArrayLM' object called fit.
 zigFit = res$fit
 finalMod = res$fit$design
-contrast.matrix = makeContrasts(PVC - polyester, levels = finalMod)
+# 8th & O (east)  8th & O (west) 
+contrast.matrix = makeContrasts(Eighth_O_east - Eighth_O_west, levels = finalMod)
 fit2 = contrasts.fit(zigFit, contrast.matrix)
 fit2 = eBayes(fit2)
-t <- topTable(fit2, sort.by="logFC")
-t$species <- taxa[rownames(t),]$species
+t <- topTable(fit2, number=nrow(fit2), sort.by="logFC")
+t$Species <- taxa[rownames(t),]$species
 
 write.table(t, paste("../otu/", city, "_diffabund_pvc_polyester.tsv", sep=""), sep="\t", quote = FALSE,
             row.names = FALSE)

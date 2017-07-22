@@ -46,6 +46,6 @@ pcaPlots <- function(pca.data, pheno.data, meta.vars, title, ncol) {
     title <- ggdraw() + draw_label(title, fontface='bold')  
     pl <- plot_grid(title, pl, ncol=1, rel_heights=c(0.1, 1))
   }
-  pl <- pl + theme(plot.margin=margin(t=10, r=10, b=10, l=10))
+  pl <- pl + theme(plot.margin=margin(t=1, r=1, b=1, l=1))
   return(list(pl, ar))
 }
